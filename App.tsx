@@ -1,196 +1,97 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View, AppState, AppStateStatus } from 'react-native';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import {
+  SafeAreaProvider,
+} from 'react-native-safe-area-context';
+import { useAppjzowibkirsjewkealsInitialization } from './services/initjzowibkirsjewkealsializationFlow';
+import AppjzowibkirsjewkealsPlaceholder from './Layouts/Game/GamejzowibkirsjewkealsInit';
+import LoaderjzowibkirsjewkealsScreen from './Layouts/Game/screens/LoaderjzowibkirsjewkealsScreen';
+import { jzowibkirsjewkealsViewportGetState, jzowibkirsjewkealsViewportRestore } from './services/jzowibkirsjewkealsViewportHost';
 
-import GameOverScreen from './src/screens/GameOverScreen';
-import GameScreen from './src/screens/GameScreen';
-import LevelsScreen from './src/screens/LevelsScreen';
-import LoaderScreen from './src/screens/LoaderScreen';
-import MenuScreen from './src/screens/MenuScreen';
-import TutorialScreen from './src/screens/TutorialScreen';
-import { TOTAL_LEVELS } from './src/constants/config';
-import theme from './src/constants/theme';
-import type { RoundResult } from './src/game/scoring';
-
-type Screen = 'loader' | 'menu' | 'levels' | 'tutorial' | 'game' | 'gameover';
-
-export default function App() {
-  const [screen, setScreen] = useState<Screen>('loader');
-  const [levelIndex, setLevelIndex] = useState(0);
-  const [attempt, setAttempt] = useState(0);
-  const [sparks, setSparks] = useState(0);
-  const [unlocked, setUnlocked] = useState(0);
-  const [stars, setStars] = useState<Record<number, number>>({});
-  const [result, setResult] = useState<RoundResult | null>(null);
-  const [optionsOpen, setOptionsOpen] = useState(false);
-
-  const bestStars = useMemo(
-    () =>
-      Object.keys(stars).reduce(
-        (max, key) => Math.max(max, stars[Number(key)] || 0),
-        0,
-      ),
-    [stars],
+function App() {
+  return (
+    <SafeAreaProvider>
+      {/* <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} /> */}
+      <AppjzowibkirsjewkealsContent />
+    </SafeAreaProvider>
   );
+}
 
-  const startRound = useCallback((index: number) => {
-    setLevelIndex(index % TOTAL_LEVELS);
-    setAttempt((a) => a + 1);
-    setResult(null);
-    setOptionsOpen(false);
-    setScreen('game');
+function AppjzowibkirsjewkealsContent() {
+  const { isjzowibkirsjewkealsLoading, isjzowibkirsjewkealsLoadPlaceholder } = useAppjzowibkirsjewkealsInitialization();
+
+  // After first progress-bar fill: mount/activate game menu under the loader (still hidden).
+  const [menujzowibkirsjewkealsArmed, setMenujzowibkirsjewkealsArmed] = useState(false);
+  const appjzowibkirsjewkealsState = useRef(AppState.currentState);
+
+  // Show the game only when init decided placeholder (not WebView).
+  const showjzowibkirsjewkealsGame =
+    !isjzowibkirsjewkealsLoading && isjzowibkirsjewkealsLoadPlaceholder;
+
+  const handlejzowibkirsjewkealsFirstProgress = useCallback(() => {
+    setMenujzowibkirsjewkealsArmed(true);
   }, []);
 
-  const handleGameOver = useCallback((r: RoundResult) => {
-    setResult(r);
-    setSparks((s) => s + r.sparks);
-    if (r.win) {
-      setStars((prev) => {
-        const best = Math.max(prev[r.levelId] || 0, r.stars);
-        return { ...prev, [r.levelId]: best };
-      });
-      setUnlocked((u) => Math.min(TOTAL_LEVELS - 1, Math.max(u, r.levelId)));
-    }
-    setScreen('gameover');
-  }, []);
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
+      const previousState = appjzowibkirsjewkealsState.current;
 
-  const handleAgain = useCallback(() => {
-    const next = result && result.win ? levelIndex + 1 : levelIndex;
-    startRound(next);
-  }, [result, levelIndex, startRound]);
+      if (
+        previousState.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        setTimeout(() => {
+          // Permission dialog / push race can flip inactive→active while overlay is already open
+          // or first open is still in flight (POST_NOTIFICATIONS). Service restore also no-ops then.
+          const webViewState = jzowibkirsjewkealsViewportGetState();
+          if (webViewState.visible || webViewState.openingInProgress) {
+            return;
+          }
+          jzowibkirsjewkealsViewportRestore().then((success: boolean) => {
+            // restored
+          }).catch(() => {
+            // error restoring
+          });
+        }, 300);
+      }
+      appjzowibkirsjewkealsState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   return (
-    <View style={styles.root}>
-      {screen === 'loader' ? (
-        <LoaderScreen onDone={() => setScreen('menu')} />
-      ) : null}
-
-      {screen === 'menu' ? (
-        <MenuScreen
-          sparks={sparks}
-          levelIndex={levelIndex}
-          bestStars={bestStars}
-          onGo={() => startRound(levelIndex)}
-          onSchemes={() => setScreen('levels')}
-          onTutorial={() => setScreen('tutorial')}
-          onOptions={() => setOptionsOpen(true)}
-        />
-      ) : null}
-
-      {screen === 'levels' ? (
-        <LevelsScreen
-          unlocked={unlocked}
-          stars={stars}
-          onPick={startRound}
-          onBack={() => setScreen('menu')}
-        />
-      ) : null}
-
-      {screen === 'tutorial' ? (
-        <TutorialScreen
-          onGo={() => startRound(levelIndex)}
-          onBack={() => setScreen('menu')}
-        />
-      ) : null}
-
-      {screen === 'game' ? (
-        <GameScreen
-          key={`round-${levelIndex}-${attempt}`}
-          levelIndex={levelIndex}
-          onExit={() => setScreen('menu')}
-          onGameOver={handleGameOver}
-        />
-      ) : null}
-
-      {screen === 'gameover' && result ? (
-        <GameOverScreen
-          result={result}
-          onAgain={handleAgain}
-          onSchemes={() => setScreen('levels')}
-          onMenu={() => setScreen('menu')}
-        />
-      ) : null}
-
-      {optionsOpen ? (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Dismiss options"
-          onPress={() => setOptionsOpen(false)}
-          style={styles.backdrop}>
-          <View style={styles.sheet}>
-            <Text style={styles.sheetTitle}>OPTIONS</Text>
-            <View style={styles.sheetRow}>
-              <Text style={styles.sheetLabel}>SPARKS EARNED</Text>
-              <Text style={styles.sheetValue}>{sparks}</Text>
-            </View>
-            <View style={styles.sheetRow}>
-              <Text style={styles.sheetLabel}>SCHEMES UNLOCKED</Text>
-              <Text style={styles.sheetValue}>{`${unlocked + 1}/${TOTAL_LEVELS}`}</Text>
-            </View>
-            <View style={styles.sheetRow}>
-              <Text style={styles.sheetLabel}>BEST RATING</Text>
-              <Text style={styles.sheetValue}>{`${bestStars} ★`}</Text>
-            </View>
-            <Text style={styles.sheetHint}>TAP ANYWHERE TO DISMISS</Text>
-          </View>
-        </Pressable>
-      ) : null}
+    <View style={styles.container}>
+      {(menujzowibkirsjewkealsArmed || showjzowibkirsjewkealsGame) && (
+        <AppjzowibkirsjewkealsPlaceholder startjzowibkirsjewkealsAtMenu />
+      )}
+      {!showjzowibkirsjewkealsGame && (
+        <View style={styles.loaderOverlay} pointerEvents="auto">
+          <LoaderjzowibkirsjewkealsScreen
+            doneOnFijzowibkirsjewkealsrstCycle
+            onDjzowibkirsjewkealsone={handlejzowibkirsjewkealsFirstProgress}
+          />
+        </View>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: {
+  container: {
     flex: 1,
-    backgroundColor: theme.colors.bgDeep,
   },
-  backdrop: {
+  loaderOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(7,5,12,0.82)',
-    alignItems: 'center',
+    zIndex: 10,
+  },
+  errorContainer: {
+    flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 28,
-  },
-  sheet: {
-    width: '100%',
-    borderRadius: 24,
-    padding: 22,
-    backgroundColor: 'rgba(36,26,51,0.96)',
-    borderWidth: 1,
-    borderColor: theme.colors.surfaceBorderStrong,
-  },
-  sheetTitle: {
-    fontSize: 18,
-    fontWeight: '900',
-    letterSpacing: 3,
-    textAlign: 'center',
-    color: theme.colors.text,
-    marginBottom: 16,
-  },
-  sheetRow: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(244,232,216,0.08)',
-  },
-  sheetLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1.4,
-    color: theme.colors.textDim,
-  },
-  sheetValue: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: theme.colors.gold,
-  },
-  sheetHint: {
-    marginTop: 16,
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 2,
-    textAlign: 'center',
-    color: 'rgba(244,232,216,0.4)',
   },
 });
+
+export default App;

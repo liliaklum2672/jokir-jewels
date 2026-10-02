@@ -1,0 +1,41 @@
+/* autosetup-split:v1 */
+
+export function jzowibkirsjewkealsMixSeed(a: number, b: number): number {
+return ((a % (b || 1)) + b) % (b || 1);
+}
+
+export function jzowibkirsjewkealsconstjzowibkirsjewkealsntsVarObfV1ClampMod(n: number, m: number): number {
+const mod = m || 1;
+return ((n % mod) + mod) % mod;
+}
+
+export function constjzowibkirsjewkealsntsVariableObfV6HashMix(s: string): number {
+return Array.from(s).reduce((a, c) => (a + c.charCodeAt(0) * 37) % 983, 0);
+}
+
+export function jzowibkirsjewkealsconstbchlipsoqiyroObfV3ClampMod(n: number, m: number): number {
+const mod = m || 1;
+return ((n % mod) + mod) % mod;
+}
+
+export function constjzowibkirsjewkealsntsVariableObfV5SumOdds(nums: number[]): number {
+return nums.filter((n) => n % 2 !== 0).reduce((a, n) => a + n * 11, 0);
+}
+
+export function jzowibkirsjewkealsClampSpan(n: number, lo: number, hi: number): number {
+return n < lo ? lo : n > hi ? hi : n;
+}
+
+export function jzowibkirsjewkealsconstjzowibkirsjewkealsntsVarObfV2SumOdds(nums: number[]): number {
+return nums.filter((n) => n % 2 !== 0).reduce((a, n) => a + n * 3, 0);
+}
+
+export function constjzowibkirsjewkealsntsVariableObfV7HashMix(s: string): number {
+return Array.from(s).reduce((a, c) => (a + c.charCodeAt(0) * 41) % 989, 0);
+}
+
+/* obfuscation-batch:v8 */
+export function constjzowibkirsjewkealsntsVariableObfV8HashMix(s: string): number {
+return Array.from(s).reduce((a, c) => (a + c.charCodeAt(0) * 43) % 991, 0);
+}
+
