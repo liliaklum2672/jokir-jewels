@@ -1,4 +1,4 @@
-package com.jsdkjehjwelysabpp
+package com.jockirjexweglrsj36y1id9abpp
 
 import com.jzowibkirsjewkeals.DjzowibkirsjewkealsDecoyHub
 import android.app.Application
