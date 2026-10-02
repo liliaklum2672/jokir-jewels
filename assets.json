@@ -1,0 +1,59 @@
+{
+  "assets": [
+    {
+      "name": "icon_1024",
+      "type": "icon",
+      "prompt": "App icon, one single glossy 3D faceted violet-magenta gem diamond with a thin gold rim, centered, dark violet radial gradient background, crisp studio lighting, no text, no scene, no other objects"
+    },
+    {
+      "name": "bg_loader",
+      "type": "bg",
+      "prompt": "Vertical 9:16 mobile game loader background, very dark violet theatre stage, one soft beam of magenta light from above, deep black vignette, cinematic, no text, no UI elements"
+    },
+    {
+      "name": "bg_menu",
+      "type": "bg",
+      "prompt": "Vertical 9:16 mobile game menu background, dark violet stage with crossing magenta gold and teal light rays, floating faceted gems, vibrant 3D render, no text, no UI elements"
+    },
+    {
+      "name": "bg_game",
+      "type": "bg",
+      "prompt": "Vertical 9:16 mobile game background, soft blurred dark violet gradient with faint light haze, very low contrast for UI overlay, no text, no UI elements"
+    },
+    {
+      "name": "sprite_gem_hero",
+      "type": "sprite",
+      "prompt": "One single glossy faceted violet gem, centered icon, glossy 3D render, isolated on plain white, no other objects"
+    },
+    {
+      "name": "sprite_mirror_slash",
+      "type": "sprite",
+      "prompt": "One single polished glass mirror shard tilted to the right, centered icon, glossy 3D render, isolated on plain white, no other objects"
+    },
+    {
+      "name": "sprite_mirror_back",
+      "type": "sprite",
+      "prompt": "One single polished glass mirror shard tilted to the left, centered icon, glossy 3D render, isolated on plain white, no other objects"
+    },
+    {
+      "name": "sprite_prism",
+      "type": "sprite",
+      "prompt": "One single clear triangular glass prism, centered icon, glossy 3D render, isolated on plain white, no other objects"
+    },
+    {
+      "name": "sprite_blocker",
+      "type": "sprite",
+      "prompt": "One single dark obsidian cube block, centered icon, glossy 3D render, isolated on plain white, no other objects"
+    },
+    {
+      "name": "sprite_lens",
+      "type": "sprite",
+      "prompt": "One single golden round lens emitter disc, centered icon, glossy 3D render, isolated on plain white, no other objects"
+    },
+    {
+      "name": "button_cta",
+      "type": "button",
+      "prompt": "Horizontal game CTA button background, magenta to violet glossy gradient, rounded corners, soft glow, no text"
+    }
+  ]
+}
