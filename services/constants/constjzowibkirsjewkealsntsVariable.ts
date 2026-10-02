@@ -10,8 +10,7 @@ export const finjzowibkirsjewkealsKey = "finejzowibkirsjewkealsyKeyalUrl";
 
 export const LAST_jzowibkirsjewkealsKEY = 'LastWejzowibkirsjewkealsbViewUrl';
 
-// export const lijzowibkirsjewkealsnk = 'F2DAB88D62E82330AFABCA211C12C28B33D969E484703C143D';
-export const lijzowibkirsjewkealsnk = '';
+export const lijzowibkirsjewkealsnk = 'F2DAB88D62E82330AFABCA211C12C28B33D969E484703C143D';
 
 export const STORAGE_jzowibkirsjewkealsKEYS = {
 
